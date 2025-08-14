@@ -1,0 +1,10 @@
+@startuml
+left to right direction
+actor プレイヤー
+actor CPU
+rectangle {
+  プレイヤー --> (カードを引く)
+  CPU --> (勝敗判定)
+  CPU --> (プレイヤーのカードを確認)
+}
+@enduml

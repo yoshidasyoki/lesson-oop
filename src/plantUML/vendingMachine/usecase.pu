@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+actor 利用者
+actor 作業員
+
+rectangle {
+  利用者 --> (お金を入れる)
+  利用者 --> (商品を選択してボタンを押す)
+  利用者 --> (お釣りを受け取る)
+
+  作業員 --> (カップを補充する)
+  作業員 --> (商品を補充する)
+}
+@enduml

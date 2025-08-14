@@ -1,0 +1,48 @@
+@startuml
+actor user
+participant VendingMachine as Machine
+participant Item
+
+== 自販機利用 ==
+user -> Machine : コイン投入
+activate Machine
+Machine -> user : 受取可否
+note right
+100円玉のみ受取可
+end note
+
+user -> Machine : 商品を選択
+Machine -> Item : 該当商品を探す
+activate Item
+Item -> Machine : 該当商品を取得 or 何も返さない
+note right
+お金不足、在庫切れ時には何も返さない
+end note
+deactivate Item
+Machine -> user : 商品をお届け
+
+user -> Machine : お釣り返却を要求
+Machine -> user : お釣りを返却
+deactivate Machine
+
+== 自販機メンテナンス ==
+user -> Machine : カップ補充
+activate Machine
+Machine -> user : ストック完了 or ストックNG
+note right
+ストックのカップが上限個数以上となったときは補充できない
+end note
+deactivate Machine
+
+user -> Machine : 商品の補充
+activate Machine
+Machine -> Item : 商品を補充できるか確認
+activate Item
+Item -> Machine : 補充の可否
+note right
+商品のストック数が上限以上となったときは補充できない
+end note
+deactivate Item
+Machine -> user : 補充の可否
+deactivate Machine
+@enduml

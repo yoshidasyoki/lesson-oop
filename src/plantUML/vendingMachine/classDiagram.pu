@@ -1,0 +1,67 @@
+@startuml
+class VendingMachine {
+  - depositedCoin : int
+  - stockCup : int
+  - inputCoin : int
+  + depositCoin(inputCoin : int) : int
+  + pressButton(item : Item) : string
+  + addCup(addCupNum : int) : int
+  + depositItem(item : Item, addItemNum : int) : void
+  + returnChange() : int
+  - hasCup(useCup : int) : bool
+  - hasStock(stockItem : int) : bool
+}
+
+class Drink {
+  - DRINK : array
+  - stock : array
+  # item : Item
+  + __construct(item : string)
+  + getPrice() : int
+  + getName() : string
+  + getCup() : int
+  + getStockNum() : int
+  + addStock(addStockNum : int) : void
+  + reduceStock() : void
+}
+class CupDrink {
+  - CUP_DRINK : array
+  - stock : array
+  # item : Item
+  + __construct(item : string)
+  + getPrice() : int
+  + getName() : string
+  + getCup() : int
+  + getStockNum() : int
+  + addStock(addStockNum : int) : void
+  + reduceStock() : void
+}
+class Snack {
+  - Snack : array
+  - stock : array
+  # item : Item
+  + __construct(item : string)
+  + getPrice() : int
+  + getName() : string
+  + getCup() : int
+  + getStockNum() : int
+  + addStock(addStockNum : int) : void
+  + reduceStock() : void
+}
+
+abstract class Item {
+  # item : string
+  + __construct(item : string)
+  {abstract} + getPrice() : int
+  {abstract} + getName() : string
+  {abstract} + getCup() : int
+  {abstract} + getStockNum() : int
+  {abstract} + addStock(addItemNum : int) : void
+  {abstract} + reduceStock() : void
+}
+
+Item <|-- Drink
+Item <|-- CupDrink
+Item <|-- Snack
+VendingMachine ..> Item
+@enduml

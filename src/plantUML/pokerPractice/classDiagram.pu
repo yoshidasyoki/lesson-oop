@@ -1,0 +1,76 @@
+@startuml
+class PokerCard {
+  - card : array
+  + CARD_RANK : array
+  + __construct(card : string)
+  + getRank() : int
+}
+class PokerGame {
+  - cards1 : array
+  - cards2 : array
+  + __construct(cards1 : array, cards2 : array)
+  + start() : array
+  - judgeRule(cards : array) : PokerRule
+}
+class PokerHandEvaluator {
+  - rule : PokerRule
+  + __construct(rule : PokerRule)
+  + getHand() : string
+  + getHandRank() : int
+  + getRsortRanks() : int
+  {static} + judgeWinner(handObjs : array) : int
+}
+Interface PokerRule {
+  - cards : array
+  + __construct(cards : array)
+  + getHand() : string
+  + getHandRank() : int
+  + getRsortRanks() : array
+}
+class RuleTwoCards {
+  - HAND_RANK : array
+  - cards : array
+  + __construct(cards : array)
+  + getHand() : string
+  + getHandRank() : int
+  + getRsortRanks() : array
+  - isPair(ranks : arra) : bool
+  - isStraight(ranks : array) : bool
+  - hasAKCards(ranks : array) : bool
+}
+class RuleThreeCards {
+  - HAND_RANK : array
+  - cards : array
+  + __construct(cards : array)
+  + getHand() : string
+  + getHandRank() : int
+  + getRsortRanks() : array
+  - isPair(ranks : array) : bool
+  - isThreeCard(ranks : array) : bool
+  - isStraight(ranks : array) : bool
+  - hasA23Cards(ranks: arra) : bool
+}
+class RuleFiveCards {
+  - HAND_RANK : array
+  - cards : array
+  + __construct(cards : array)
+  + getHand() : string
+  + getHandRank() : int
+  + getRsortRanks() : array
+  - isOnePair(ranks : array) : bool
+  - isTwoPair(ranks : array) : bool
+  - isStraight(ranks : array) : bool
+  - isThreeCard(ranks : array) : bool
+  - isFourCard(ranks : array) : bool
+  - isFullHouse(ranks : array : bool
+  - checkSetCardsCount(ranks : array, sameCardsCount : int) : int
+}
+PokerRule <|.. RuleTwoCards
+PokerRule <|.. RuleThreeCards
+PokerRule <|.. RuleFiveCards
+PokerHandEvaluator ..> PokerRule
+PokerGame ..> PokerHandEvaluator
+RuleTwoCards ..> PokerCard
+RuleThreeCards ..> PokerCard
+RuleFiveCards ..> PokerCard
+@enduml

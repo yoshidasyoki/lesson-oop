@@ -1,0 +1,18 @@
+FROM php:8.4-apache
+
+WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y libzip-dev \
+    # composerに必要なライブラリ群
+    unzip zip git libonig-dev \
+    # 拡張ライブラリのインストール
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    # キャッシュファイルの削除
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+EXPOSE 80
