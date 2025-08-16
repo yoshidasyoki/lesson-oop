@@ -2,10 +2,9 @@
 
 namespace VendingMachine;
 
-require_once(__DIR__ . '/Item.php');
-use VendingMachine\Item;
+require_once(__DIR__ . '/UseCupItem.php');
 
-class CupDrink extends Item
+class CupDrink extends UseCupItem
 {
     private const ICE_CUP_COFFEE = 'ice cup coffee';
     private const HOT_CUP_COFFEE = 'hot cup coffee';
@@ -22,19 +21,22 @@ class CupDrink extends Item
         self::ICE_CUP_COFFEE => ['nowStock' => 0, 'maxStock' => self::MAX_ICE_CUP_COFFEE_NUM],
     ];
 
-    public function __construct(string $item)
+    private CupManagement $cupDrinkStock;
+
+    public function __construct(string $item, CupManagement $cupDrinkStock)
     {
-        parent::__construct($item);
+        parent::__construct($item, $cupDrinkStock);
+        $this->cupDrinkStock = $cupDrinkStock;
+    }
+
+    public function getItemName(): array
+    {
+        return array_keys(self::CUP_DRINK);
     }
 
     public function getPrice(): int
     {
-        return array_key_exists($this->item, self::CUP_DRINK) ? self::CUP_DRINK[$this->item] : 0;
-    }
-
-    public function getName(): string
-    {
-        return array_key_exists($this->item, self::CUP_DRINK) ? $this->item : '';
+        return self::CUP_DRINK[$this->item];
     }
 
     public function getCup(): int
@@ -48,6 +50,18 @@ class CupDrink extends Item
         return $this->stock[$name]['nowStock'];
     }
 
+    public function canBuyItem(int $depositedCoin): bool
+    {
+        return (($depositedCoin >= $this->getPrice()) && ($this->getStockNum() > 0) && ($this->cupDrinkStock->getStockCup() > 0));
+    }
+
+    public function buyItem(): void
+    {
+        $name = $this->getName();
+        $this->stock[$name]['nowStock'] -= 1;
+        $this->cupDrinkStock->reduceCup();
+    }
+
     public function addStock(int $addStockNum): void
     {
         $name = $this->getName();
@@ -58,9 +72,4 @@ class CupDrink extends Item
         ($nowStock >= $maxStock) ? $this->stock[$name]['nowStock'] = $maxStock : $this->stock[$name]['nowStock'] = $nowStock;
     }
 
-    public function reduceStock(): void
-    {
-        $name = $this->getName();
-        $this->stock[$name]['nowStock'] -= 1;
-    }
 }

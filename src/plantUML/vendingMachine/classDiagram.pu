@@ -1,67 +1,92 @@
 @startuml
 class VendingMachine {
-  - depositedCoin : int
-  - stockCup : int
-  - inputCoin : int
-  + depositCoin(inputCoin : int) : int
+  - payManagement : PayManagement
+  - cupManagement : CupManagement
+  + categorizeItem(itemName : string) : Item|Exception
+  + depositCoin(inputCoin : int) : void
   + pressButton(item : Item) : string
-  + addCup(addCupNum : int) : int
-  + depositItem(item : Item, addItemNum : int) : void
+  + addItem(item : Item, addItemNum : int) : void
+  + addCup(addCupNum : int) : void
   + returnChange() : int
-  - hasCup(useCup : int) : bool
-  - hasStock(stockItem : int) : bool
+  - stockCup : int
 }
-
+class PayManagement {
+  - USE_COIN : array
+  - depositedCoin : int
+  + getDepositedCoin() : int
+  + inputCoin(inputCoin : int : void
+  + buyItem(itemPrice : int) : void
+  + returnChange() : int
+}
+class CupManagement {
+  - stockCup : int
+  + addCup(addCupNum : int) : int
+  + getStockCup() : int
+  + reduceCup() : void
+}
+abstract class Item {
+  # item : string
+  + __construct(item : string)
+  + getName() : string
+  {abstract} + getPrice() : int
+  {abstract} + getStockNum() : int
+  {abstract} + canBuyItem(depositedCoin : int) : bool
+  {abstract} + buyItem() : void
+  {abstract} + addStock(addItemNum : int) : void
+}
 class Drink {
   - DRINK : array
   - stock : array
   # item : Item
   + __construct(item : string)
+  + getItemName() : array
   + getPrice() : int
-  + getName() : string
-  + getCup() : int
   + getStockNum() : int
+  + canBuyItem(depositedCoin : int) : bool
+  + buyItem() : void
   + addStock(addStockNum : int) : void
-  + reduceStock() : void
 }
+class Snack {
+  - SNACK : array
+  - stock : array
+  # item : Item
+  + __construct(item : string)
+  + getItemName() : array
+  + getPrice() : int
+  + getStockNum() : int
+  + canBuyItem(depositedCoin : int) : bool
+  + buyItem() : void
+  + addStock(addStockNum : int) : void
+}
+
+abstract class UseCupItem {
+  # item : string
+  # cupManagement
+  + __construct(item : string, cupManagement : CupManagement)
+  {abstract} + getCup() : int
+}
+
 class CupDrink {
   - CUP_DRINK : array
   - stock : array
-  # item : Item
-  + __construct(item : string)
+  # item : string
+  # cupDrinkStock : CupManagement
+  + __construct(item : string, cupDrinkStock : Cupmanagement)
+  + getItemName() : array
   + getPrice() : int
-  + getName() : string
   + getCup() : int
   + getStockNum() : int
-  + addStock(addStockNum : int) : void
-  + reduceStock() : void
-}
-class Snack {
-  - Snack : array
-  - stock : array
-  # item : Item
-  + __construct(item : string)
-  + getPrice() : int
-  + getName() : string
-  + getCup() : int
-  + getStockNum() : int
-  + addStock(addStockNum : int) : void
-  + reduceStock() : void
+  + canBuyItem(depositedCoin : int) : bool
+  + buyItem() : void
+  + addStock(addStockNum) : void
 }
 
-abstract class Item {
-  # item : string
-  + __construct(item : string)
-  {abstract} + getPrice() : int
-  {abstract} + getName() : string
-  {abstract} + getCup() : int
-  {abstract} + getStockNum() : int
-  {abstract} + addStock(addItemNum : int) : void
-  {abstract} + reduceStock() : void
-}
 
 Item <|-- Drink
-Item <|-- CupDrink
 Item <|-- Snack
+Item <|-- UseCupItem
+UseCupItem <|-- CupDrink
+CupManagement ..> CupDrink
 VendingMachine ..> Item
+VendingMachine ..> PayManagement
 @enduml

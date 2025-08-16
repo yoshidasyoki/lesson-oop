@@ -9,32 +9,22 @@ use VendingMachine\Drink;
 
 class DrinkTest extends TestCase
 {
+    public function testGetItemName(): void
+    {
+        $drink = new Drink('cider');
+        $this->assertSame(['cider', 'cola'], $drink->getItemName());
+    }
+
     public function testGetPrice(): void
     {
-        // 登録されていない商品名は0を返す
-        $item = new Drink('water');
-        $this->assertSame(0, $item->getPrice());
-
-        // 登録されている商品名は価格を返す
         $item = new Drink('cider');
         $this->assertSame(100, $item->getPrice());
     }
 
     public function testGetName(): void
     {
-        // 登録されていない商品名は空値を返す
-        $water = new Drink('water');
-        $this->assertSame('', $water->getName());
-
-        // 登録されている商品名は商品名を返す
         $cider = new Drink('cider');
         $this->assertSame('cider', $cider->getName());
-    }
-
-    public function testGetCup(): void
-    {
-        $cider = new Drink('cider');
-        $this->assertSame(0, $cider->getCup());
     }
 
     public function testGetStockNum(): void
@@ -53,11 +43,11 @@ class DrinkTest extends TestCase
         $this->assertSame(50, $cider->getStockNum());
     }
 
-    public function testReduceStock(): void
+    public function testBuyItem(): void
     {
         $cider = new Drink('cider');
         $cider->addStock(2);
-        $cider->reduceStock();
+        $cider->buyItem();
         $this->assertSame(1, $cider->getStockNum());
     }
 }

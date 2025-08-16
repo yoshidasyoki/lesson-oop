@@ -12,24 +12,48 @@ use VendingMachine\Snack;
 
 class VendingMachineTest extends TestCase
 {
+    public function testCategorizeItem(): void
+    {
+        $vendingMachine = new VendingMachine();
+
+        // ドリンクのインスタンスを取得
+        $drink = $vendingMachine->categorizeItem('cider');
+        $this->assertInstanceOf(Drink::class, $drink);
+
+        // // カップドリンクのインスタンスを取得
+        $cupDrink = $vendingMachine->categorizeItem('ice cup coffee');
+        $this->assertInstanceOf(CupDrink::class, $cupDrink);
+
+        // スナックのインスタンスを取得
+        $snack = $vendingMachine->categorizeItem('chocolate');
+        $this->assertInstanceOf(Snack::class, $snack);
+
+        // 存在しないアイテム名で例外が投げられるか確認
+        $this->expectException(\Exception::class);
+        $vendingMachine->categorizeItem('unknown item');
+    }
+
     public function testDepositCoin(): void
     {
         $vendingMachine = new VendingMachine();
-        $this->assertSame(0, $vendingMachine->DepositCoin(0));
-        $this->assertSame(0, $vendingMachine->DepositCoin(150));
-        $this->assertSame(100, $vendingMachine->DepositCoin(100));
-        $this->assertSame(200, $vendingMachine->DepositCoin(100));
+        // 100円玉以外は投入できない
+        $vendingMachine->depositCoin(50);
+        $this->assertSame(0, $vendingMachine->returnChange());
+        // 100円玉を投入したときは加算
+        $vendingMachine->depositCoin(100);
+        $this->assertSame(100, $vendingMachine->returnChange());
     }
+
     public function testPressButton(): void
     {
         # ドリンクインスタンスの動作チェック
         $vendingMachine = new VendingMachine();
-        $cider = new Drink('cider');
-        $cola = new Drink('cola');
+        $cider = $vendingMachine->categorizeItem('cider');
+        $cola = $vendingMachine->categorizeItem('cola');
 
         // 在庫補充
-        $vendingMachine->depositItem($cider, 1);
-        $vendingMachine->depositItem($cola, 1);
+        $vendingMachine->addItem($cider, 1);
+        $vendingMachine->addItem($cola, 1);
 
         // お金が投入されていない場合は購入できない
         $this->assertSame('', $vendingMachine->pressButton($cider));
@@ -39,7 +63,7 @@ class VendingMachineTest extends TestCase
         $this->assertSame('cider', $vendingMachine->pressButton($cider));
 
         // 100円ではコーラは購入できない
-        $vendingMachine->depositItem($cola, 20);
+        $vendingMachine->addItem($cola, 20);
         $vendingMachine->depositCoin(100);
         $this->assertSame('', $vendingMachine->pressButton($cola));
 
@@ -53,14 +77,14 @@ class VendingMachineTest extends TestCase
         $this->assertSame('', $vendingMachine->pressButton($cider));
 
 
-        # カップドリンクインスタンスの動作チェック
+        // # カップドリンクインスタンスの動作チェック
         $vendingMachine = new VendingMachine();
-        $iceCupCoffee = new CupDrink('ice cup coffee');
-        $hotCupCoffee = new CupDrink('hot cup coffee');
+        $iceCupCoffee = $vendingMachine->categorizeItem('ice cup coffee');
+        $hotCupCoffee = $vendingMachine->categorizeItem('hot cup coffee');
 
         // 在庫補充
-        $vendingMachine->depositItem($iceCupCoffee, 1);
-        $vendingMachine->depositItem($hotCupCoffee, 0);
+        $vendingMachine->addItem($iceCupCoffee, 1);
+        $vendingMachine->addItem($hotCupCoffee, 0);
 
         // お金が投入されていない場合は購入できない
         $this->assertSame('', $vendingMachine->pressButton($iceCupCoffee));
@@ -84,12 +108,12 @@ class VendingMachineTest extends TestCase
 
         # スナックインスタンスの動作チェック
         $vendingMachine = new VendingMachine();
-        $chocolate = new Snack('chocolate');
-        $potatoChips = new Snack('potato chips');
+        $chocolate = $vendingMachine->categorizeItem('chocolate');
+        $potatoChips = $vendingMachine->categorizeItem('potato chips');
 
         // 在庫補充
-        $vendingMachine->depositItem($chocolate, 1);
-        $vendingMachine->depositItem($potatoChips, 1);
+        $vendingMachine->addItem($chocolate, 1);
+        $vendingMachine->addItem($potatoChips, 1);
 
         // お金が投入されていない場合は購入できない
         $this->assertSame('', $vendingMachine->pressButton($chocolate));
@@ -112,19 +136,11 @@ class VendingMachineTest extends TestCase
         $this->assertSame('', $vendingMachine->pressButton($chocolate));
     }
 
-    public function testAddCup(): void
-    {
-        $vendingMachine = new VendingMachine();
-        $this->assertSame(99, $vendingMachine->addCup(99));
-        $this->assertSame(100, $vendingMachine->addCup(1));
-        $this->assertSame(100, $vendingMachine->addCup(1));
-    }
-
     public function testReturnChange(): void
     {
         $vendingMachine = new VendingMachine();
         $cola = new Drink('cola');
-        $vendingMachine->depositItem($cola, 25);
+        $vendingMachine->addItem($cola, 25);
 
         // お金を入れて商品を購入
         $vendingMachine->depositCoin(100);
@@ -137,13 +153,13 @@ class VendingMachineTest extends TestCase
         $this->assertSame(0, $vendingMachine->returnChange());
     }
 
-    public function testDepositItem(): void
+    public function testaddItem(): void
     {
         $vendingMachine = new VendingMachine();
         $cider = new Drink('cider');
 
         // 在庫の追加処理
-        $vendingMachine->depositItem($cider, 25);
+        $vendingMachine->addItem($cider, 25);
         // 在庫が追加されたかを確認
         $this->assertSame(25, $cider->getStockNum());
     }

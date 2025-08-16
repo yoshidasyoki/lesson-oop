@@ -9,32 +9,22 @@ use VendingMachine\Snack;
 
 class SnackTest extends TestCase
 {
+    public function testGetItemName(): void
+    {
+        $snack = new Snack('potato chips');
+        $this->assertSame(['potato chips', 'chocolate'], $snack->getItemName());
+    }
+
     public function testGetPrice(): void
     {
-        // 登録されていない商品は0を返す
-        $candy = new Snack('candy');
-        $this->assertSame(0, $candy->getPrice());
-
-        // 登録されている商品は価格を返す
         $potatoChips = new Snack('potato chips');
         $this->assertSame(200, $potatoChips->getPrice());
     }
 
     public function testGetName(): void
     {
-        // 登録されていない商品は空値を返す
-        $candy = new Snack('candy');
-        $this->assertSame('', $candy->getName());
-
-        // 登録されている商品は商品名を返す
         $chocolate = new Snack('chocolate');
         $this->assertSame('chocolate', $chocolate->getName());
-    }
-
-    public function testGetCup(): void
-    {
-        $chocolate = new Snack('chocolate');
-        $this->assertSame(0, $chocolate->getCup());
     }
 
     public function testGetStockNum(): void
@@ -53,11 +43,11 @@ class SnackTest extends TestCase
         $this->assertSame(20, $chocolate->getStockNum());
     }
 
-    public function testReduceStock(): void
+    public function testBuyItem(): void
     {
         $chocolate = new Snack('chocolate');
         $chocolate->addStock(2);
-        $chocolate->reduceStock();
+        $chocolate->buyItem();
         $this->assertSame(1, $chocolate->getStockNum());
     }
 }

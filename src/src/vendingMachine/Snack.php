@@ -27,25 +27,31 @@ class Snack extends Item
         parent::__construct($item);
     }
 
+    public function getItemName(): array
+    {
+        return array_keys(self::SNACK);
+    }
+
     public function getPrice(): int
     {
-        return array_key_exists($this->item, self::SNACK) ? self::SNACK[$this->item] : 0;
-    }
-
-    public function getName(): string
-    {
-        return array_key_exists($this->item, self::SNACK) ? $this->item : '';
-    }
-
-    public function getCup(): int
-    {
-        return 0;
+        return self::SNACK[$this->item];
     }
 
     public function getStockNum(): int
     {
         $name = $this->getName();
         return $this->stock[$name]['nowStock'];
+    }
+
+    public function canBuyItem($depositedCoin): bool
+    {
+        return $depositedCoin >= $this->getPrice() && $this->getStockNum() > 0;
+    }
+
+    public function buyItem(): void
+    {
+        $name = $this->getName();
+        $this->stock[$name]['nowStock'] -= 1;
     }
 
     public function addStock(int $addStockNum): void
@@ -56,11 +62,5 @@ class Snack extends Item
 
         $nowStock += $addStockNum;
         ($nowStock >= $maxStock) ? $this->stock[$name]['nowStock'] = $maxStock : $this->stock[$name]['nowStock'] = $nowStock;
-    }
-
-    public function reduceStock(): void
-    {
-        $name = $this->getName();
-        $this->stock[$name]['nowStock'] -= 1;
     }
 }
